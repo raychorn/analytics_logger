@@ -1,0 +1,20 @@
+/var/www/analytics_logger/current/log/events.log{
+daily
+copytruncate
+compress
+dateext
+olddir processed
+notifempty
+prerotate
+endscript
+lastaction
+  LOGDIR=/var/www/analytics_logger/current/log/processed
+  DTE=`date +%Y%m%d`
+  HOSTN=`hostname`
+  FILENAME=events.log-${DTE}.gz
+  NEWNAME=${DTE}_${HOSTN}.log.gz
+  mv $LOGDIR/$FILENAME $LOGDIR/$NEWNAME
+  scp $LOGDIR/$NEWNAME hadoop@10.100.162.61:events/
+#  ssh hadoop@10.100.162.61 "sh /home/hadoop/analytics-thirdparty/hadoop/hive/trunk/hive/ProcessLog.sh $NEWNAME"
+endscript
+}

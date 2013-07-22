@@ -1,0 +1,13 @@
+---
+pid: tmp/pids/thin.pid
+log: log/thin.log
+max_conns: 1024
+timeout: 30
+port: 3000
+chdir: /var/www/analytics_logger/current
+max_persistent_conns: 512
+environment: production
+servers: 3
+daemonize: true
+address: 0.0.0.0
+require: []

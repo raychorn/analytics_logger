@@ -1,0 +1,13 @@
+defaults: &defaults
+  host: #{rabbitmq_host}
+  routing_key: #{rabbitmq_routing_key}
+  app_name: #{application}
+  
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+  
+production:
+  <<: *defaults

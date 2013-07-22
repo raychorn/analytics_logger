@@ -1,0 +1,123 @@
+# duplicate all 3 sections below for each new server instance
+
+upstream analyticslogger {
+	server 127.0.0.1:3000;
+	server 127.0.0.1:3001;
+	server 127.0.0.1:3002;
+}
+
+# Redirect all http traffic to https
+#server {
+#	listen   80;
+#	server_name  www.analyticslogger.clouddev2.mxplay.com;
+#	rewrite ^/(.*) https://analyticslogger.clouddev2.mxplay.com/$1 permanent;
+#}
+
+server {
+	server_name analyticslogger.clouddev2.mxplay.com;
+	
+	access_log /var/log/nginx/analyticslogger_rails_access.log;
+	error_log /var/log/nginx/analyticslogger_rails_error.log;
+	
+	root  /var/www/analytics_logger/current/public/;
+	index  index.html;
+	
+	location ~* \.(js|css|jpg|jpeg|gif|png)$ {
+		if (!-e $request_filename) {
+			break;
+		}
+
+		# If the asset is versioned, only then do we set expiration to max
+		if ($query_string ~* "^[0-9]{10}$") {
+			expires      max;
+			break;
+		}
+	}
+	
+	location / {
+		proxy_set_header  X-Real-IP  $remote_addr;
+		proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect false;
+		
+		# If the file exists as a static file serve it directly without
+		# running all the other rewite tests on it
+		if (-f $request_filename) { 
+			break; 
+		}
+		
+		if (-f $request_filename/index.html) {
+			rewrite (.*) $1/index.html break;
+		}
+		
+		if (-f $request_filename.html) {
+			rewrite (.*) $1.html break;
+		}
+		
+		if (!-f $request_filename) {
+			proxy_pass http://analyticslogger;
+			break;
+		}
+	}
+}
+
+server {
+	# Listen on 443
+	listen   443;
+	
+	# SSL on
+	ssl on;
+	
+	# SSL certificate paths
+	ssl_certificate /etc/nginx/certs/vzmm.analytics.smithmicro.com.crt;
+	ssl_certificate_key /etc/nginx/certs/server.key;
+	
+	server_name analyticslogger.clouddev2.mxplay.com;
+	
+	access_log /var/log/nginx/analyticslogger_rails_access.log;
+	error_log /var/log/nginx/analyticslogger_rails_error.log;
+	
+	root  /var/www/analytics_logger/current/public/;
+	index  index.html;
+	
+	location ~* \.(js|css|jpg|jpeg|gif|png)$ {
+		if (!-e $request_filename) {
+			break;
+		}
+
+		# If the asset is versioned, only then do we set expiration to max
+		if ($query_string ~* "^[0-9]{10}$") {
+			expires      max;
+			break;
+		}
+	}
+	
+	location / {
+		# Set X-FORWARDED_PROTO so ssl_requirement plugin works
+		proxy_set_header X-FORWARDED_PROTO https;
+	
+		proxy_set_header  X-Real-IP  $remote_addr;
+		proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect false;
+		
+		# If the file exists as a static file serve it directly without
+		# running all the other rewite tests on it
+		if (-f $request_filename) { 
+			break; 
+		}
+		
+		if (-f $request_filename/index.html) {
+			rewrite (.*) $1/index.html break;
+		}
+		
+		if (-f $request_filename.html) {
+			rewrite (.*) $1.html break;
+		}
+		
+		if (!-f $request_filename) {
+			proxy_pass http://analyticslogger;
+			break;
+		}
+	}
+}

@@ -1,0 +1,21 @@
+/var/www/analytics_logger/dev/current/log/events.log{
+daily
+copytruncate
+compress
+dateext
+olddir processed
+notifempty
+prerotate
+endscript
+lastaction
+  PROJECT=dev
+  LOGDIR=/var/www/analytics_logger/${PROJECT}/current/log/processed
+  DTE=`date +%Y%m%d`
+  HOSTN=`hostname`
+  FILENAME=events.log-${DTE}.gz
+  NEWNAME=${DTE}_${HOSTN}_${PROJECT}.log.gz
+  mv $LOGDIR/$FILENAME $LOGDIR/$NEWNAME
+  ssh hadoop@localhost "source ~/.profile; hadoop dfs -put $LOGDIR/$NEWNAME $PROJECT/$NEWNAME"
+  ssh hadoop@localhost "source ~/.profile; bash $ANALYTICS_LIB/scripts/put_and_expand.sh $LOGDIR/$NEWNAME hive1 $PROJECT"
+endscript
+}

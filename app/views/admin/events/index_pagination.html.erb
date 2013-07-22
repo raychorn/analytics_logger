@@ -1,0 +1,29 @@
+<%= javascript_include_tag "prototype" %>
+<%= stylesheet_link_tag "pagination" %>
+<%= calendar_date_select_includes "red" %>
+<h1>Events : Total Entries: <%= @total_entries %></h1>
+
+<h3>Currently Showing: <%= @view_status %></h3>
+<span>Entries Per Page [<%= @per_page %>]:</span>
+<% form_tag({:action => "index"}, {:method => 'get'}) do %>
+  <% opts = ["50", "100", "500"].map do |o|  
+    "<option>#{o}</option>" 
+  end.to_s  %>
+  <%= select_tag("per_page", opts) %>
+  From Date (on log filename): <%= calendar_date_select_tag "e_date" %>
+  <%= submit_tag("Update") %>
+  <% if @page == 'last' %>
+  	<%= link_to 'Last Page', {:page => 'last'}, :class => 'last-page-active' %>
+  <% else %>
+    <%= link_to 'Last Page', {:page => 'last'}, :class => 'last-page' %>
+  <% end %>  
+<% end %>
+<% paginated_section @page_results do %>
+
+<div class="log-data">
+<% for event in @page_results -%>
+<pre><%= event -%></pre>
+<% end -%>
+</div>
+
+<% end %>

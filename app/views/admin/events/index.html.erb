@@ -1,0 +1,12 @@
+<h3>Currently Showing: <%= @view_status %></h3>
+
+<% form_tag({:action => "index"}, {:method => 'get'}) do %>
+  <%= text_field_tag(:total_entries, @total_entries, :size => 5) %>
+  <%= submit_tag("Update") %>
+<% end %>
+
+<div class="log-data">
+<% for event in @page_results -%>
+<pre><%= event -%></pre>
+<% end -%>
+</div>

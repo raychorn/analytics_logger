@@ -1,0 +1,19 @@
+<div class="server-info">
+<% (1..(@servers.size-1)).each do |i_product| %>
+	<h2>product name: <%=h @servers[i_product][:text] %></h2>
+	<ul>
+		<li>load balancer: <%=h @servers[i_product][:data][:load_balancer] %>
+			<ul>
+				<li>POST events to: <%=h @servers[i_product][:data][:events_post_url] %></li>
+			</ul>
+		</li>
+		<% @servers[i_product][:children].each do |logging_server| %>
+			<li><%=h "logging server: #{logging_server[:text]} (#{logging_server[:data][:events_socket]})" %>
+				<ul>
+					<li>view logs: <%=h logging_server[:data][:server_url] %></li> 
+				</ul>
+			</li>
+		<% end %>
+	</ul>
+<% end %>
+</div>

@@ -1,0 +1,8 @@
+--- 
+format: 1
+handler: 
+  commit: bab48f8344349af6db359fa54b53813f8abd290b
+  branch: master
+lock: false
+repository_class: Piston::Git::Repository
+repository_url: git://github.com/pauldowman/better_logging.git
